@@ -23,7 +23,8 @@ const TABLECHARACTER = {
 // array que vai ficar com as informações 
 let numbersValidsToEncrypt = []
 
-const encrypt = (event) => {
+
+const encrypt = () => {
   if (!inputAHTML.value || !inputBHTML.value || !inputHTML.value) return
 
   // valor vindo do input principal
@@ -31,6 +32,8 @@ const encrypt = (event) => {
   // Ex.: ['P', 'O', 'O']
   const messageToEncryptInChar = inputHTML.value.split('')
 
+  // limpar o array para resolver bug do clicar e manter as palavras salvas
+  numbersValidsToEncrypt.length = 0
   // pecorre os array com os caracetres
   messageToEncryptInChar.forEach((item) => {
     // cálculo para achar o número da criptografia
@@ -82,7 +85,7 @@ const encrypt = (event) => {
   resultHTML.innerHTML = `<p>Sua mensagem criptografada: <strong>${wordEncrypt}</strong></p>`
 }
 
-const decrypt = (event) => {
+const decrypt = () => {
   if (!inputAHTML.value || !inputBHTML.value || !inputHTML.value) return
 
   let wordEncrypt = ''
