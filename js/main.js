@@ -3,7 +3,6 @@ const inputAHTML = document.getElementById('A')
 const inputBHTML = document.getElementById('B')
 const btnEncrypt = document.querySelector('.btnEncrypt')
 const resultHTML = document.querySelector('.result')
-const alertSpanHTML = document.querySelector('.alertSpan')
 
 // tabela de caracteres para criptografia
 // divididos por positivos e negativos
@@ -20,18 +19,35 @@ const TABLECHARACTER = {
   }
 }
 
-// array que vai ficar com as informações 
-let numbersValidsToEncrypt = []
-
-const encrypt = (event) => {
+const encrypt = () => {
   if (!inputAHTML.value || !inputBHTML.value || !inputHTML.value) return
 
   // valor vindo do input principal
   // transformando em array com cada letra
   // Ex.: ['P', 'O', 'O']
   const messageToEncryptInChar = inputHTML.value.split('')
+  
+  const [wordEncrypt] = encryptMessage(messageToEncryptInChar)
+ 
+  //  adiciona na tela o resultado
+  resultHTML.innerHTML = `<p>Sua mensagem criptografada: <strong>${wordEncrypt}</strong></p>`
+}
 
-  // pecorre os array com os caracetres
+const decrypt = () => {
+  if (!inputAHTML.value || !inputBHTML.value || !inputHTML.value) return
+
+  const messageToEncryptInChar = inputHTML.value.split('')
+  const [, numbersValidsToEncrypt] = encryptMessage(messageToEncryptInChar)
+  
+  const wordDecrypt = decryptMessage(numbersValidsToEncrypt)
+
+  resultHTML.innerHTML = `<p>Sua mensagem criptografada: <strong>${wordDecrypt}</strong></p>`
+} 
+
+
+const encryptMessage = (messageToEncryptInChar) => {
+  let numbersValidsToEncrypt = []
+// pecorre os array com os caracetres
   messageToEncryptInChar.forEach((item) => {
     // cálculo para achar o número da criptografia
     const number = (Number(inputAHTML.value) * Number(TABLECHARACTER.positive[item])) + Number(inputBHTML.value)
@@ -49,10 +65,8 @@ const encrypt = (event) => {
     }
   })
 
+  let str = ''
 
-
-  let wordEncrypt = ''
-  
   let count = 0
   // pecorre a quantidade de elementos que seram encriptografado
   for (count; count < numbersValidsToEncrypt.length; count++) {
@@ -65,54 +79,48 @@ const encrypt = (event) => {
         // verificamos se o número salvo for igual ao da tabela
         if (Number(item) === numbersValidsToEncrypt[count].number) {
           // adicionamos na string a letra na posição onde o valor foi igual ao número do cálculo da congruenca
-          wordEncrypt += Object.keys(TABLECHARACTER.positive)[index]
+          str += Object.keys(TABLECHARACTER.positive)[index]
         }
       })
     } else {
       // mesma lógica para tabela dos negativo
       Object.values(TABLECHARACTER.negative).forEach((item, index) => {
         if (Number(item) === numbersValidsToEncrypt[count].number) {
-          wordEncrypt += Object.keys(TABLECHARACTER.negative)[index]
+          str += Object.keys(TABLECHARACTER.negative)[index]
         }
       })
     }
   }
 
-  //  adiciona na tela o resultado
-  resultHTML.innerHTML = `<p>Sua mensagem criptografada: <strong>${wordEncrypt}</strong></p>`
+  return [str, numbersValidsToEncrypt]
 }
 
-const decrypt = (event) => {
-  if (!inputAHTML.value || !inputBHTML.value || !inputHTML.value) return
-
-  let wordEncrypt = ''
-  
-
+const decryptMessage = (numbersValidsToEncrypt) => {
   let inverseArray = []
+  let str = ''
   numbersValidsToEncrypt.forEach((item) => {
     inverseArray.push(inverseFunction(inputAHTML.value, inputBHTML.value, item.oldNumber))     
   })
+
 
   inverseArray.forEach((item) => {
     if (Number(item) > 0) {
       Object.values(TABLECHARACTER.positive).forEach((tableNumber, index) => {
         if (Number(tableNumber) === Number(item))  {
-          wordEncrypt += Object.keys(TABLECHARACTER.positive)[index];
+          str += Object.keys(TABLECHARACTER.positive)[index];
         }
       })
     } else {
       Object.values(TABLECHARACTER.negative).forEach((tableNumber, index) => {
         if (Number(tableNumber) === Number(item))  {
-          wordEncrypt += Object.keys(TABLECHARACTER.negative)[index];
+          str += Object.keys(TABLECHARACTER.negative)[index];
         }
       })
     }
   })
 
-  resultHTML.innerHTML = `<p>Sua mensagem criptografada: <strong>${wordEncrypt}</strong></p>`
-} 
-
-
+  return str
+}
 
 // até achar um número enre -28 e 29
 const findK = (number) => {
