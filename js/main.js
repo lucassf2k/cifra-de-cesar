@@ -39,9 +39,7 @@ const encrypt = () => {
 const decrypt = () => {
   if (!inputAHTML.value || !inputBHTML.value || !inputHTML.value) return
 
-  const messageToEncryptInChar = inputHTML.value.split('')
-  
-  const wordDecrypt = decryptMessage(messageToEncryptInChar, numberTorDecrypt)
+  const wordDecrypt = decryptMessage(numberTorDecrypt)
 
   resultHTML.innerHTML = `<p>Sua mensagem criptografada: <strong>${wordDecrypt}</strong></p>`
 } 
@@ -62,13 +60,6 @@ const encryptMessage = (messageToEncryptInChar) => {
       // cálculo um número que esteja entre o range de 1 e 29 (tamanho da tabela)
       const newNumber = findK(number) 
 
-      // let newNumber
-
-      // if (number > 29) {
-      //   newNumber = number % 29
-      // } else {
-      //   newNumber = number
-      // }
       // adiciona o número novo e guarda o antigo tbm
       // o char ainda não foi atualizado
       numbersValidsToEncrypt.push({ char: item, number: Number(newNumber), oldNumber: number })
@@ -105,7 +96,7 @@ const encryptMessage = (messageToEncryptInChar) => {
   return [str, numbersValidsToEncrypt]
 }
 
-const decryptMessage = (messageToEncryptInChar, numberTorDecrypt) => {
+const decryptMessage = (numberTorDecrypt) => {
   let inverseArray = []
   let str = ''
 
