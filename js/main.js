@@ -19,6 +19,8 @@ const TABLECHARACTER = {
   }
 }
 
+let numberTorDecrypt = []
+
 const encrypt = () => {
   if (!inputAHTML.value || !inputBHTML.value || !inputHTML.value) return
 
@@ -27,7 +29,8 @@ const encrypt = () => {
   // Ex.: ['P', 'O', 'O']
   const messageToEncryptInChar = inputHTML.value.split('')
   
-  const [wordEncrypt] = encryptMessage(messageToEncryptInChar)
+  const [wordEncrypt, arrayEncrypt] = encryptMessage(messageToEncryptInChar)
+  numberTorDecrypt = arrayEncrypt
  
   //  adiciona na tela o resultado
   resultHTML.innerHTML = `<p>Sua mensagem criptografada: <strong>${wordEncrypt}</strong></p>`
@@ -37,9 +40,8 @@ const decrypt = () => {
   if (!inputAHTML.value || !inputBHTML.value || !inputHTML.value) return
 
   const messageToEncryptInChar = inputHTML.value.split('')
-  const [, numbersValidsToEncrypt] = encryptMessage(messageToEncryptInChar)
   
-  const wordDecrypt = decryptMessage(numbersValidsToEncrypt)
+  const wordDecrypt = decryptMessage(messageToEncryptInChar, numberTorDecrypt)
 
   resultHTML.innerHTML = `<p>Sua mensagem criptografada: <strong>${wordDecrypt}</strong></p>`
 } 
@@ -53,15 +55,23 @@ const encryptMessage = (messageToEncryptInChar) => {
     const number = (Number(inputAHTML.value) * Number(TABLECHARACTER.positive[item])) + Number(inputBHTML.value)
 
     // verifica se está entre o range dos caracteres
-    if (number > 1 && number < 29) {
+    if (number >= 1 && number <= 29) {
       // salva, o char, o numero que está com char 
-      numbersValidsToEncrypt.push({ char: item, number: Number(TABLECHARACTER.positive[item]), oldNumber: number })
+      numbersValidsToEncrypt.push({ char: item, number: number, oldNumber: number })
     } else {
       // cálculo um número que esteja entre o range de 1 e 29 (tamanho da tabela)
       const newNumber = findK(number) 
+
+      // let newNumber
+
+      // if (number > 29) {
+      //   newNumber = number % 29
+      // } else {
+      //   newNumber = number
+      // }
       // adiciona o número novo e guarda o antigo tbm
       // o char ainda não foi atualizado
-      numbersValidsToEncrypt.push({ char: item, number: newNumber, oldNumber: number })
+      numbersValidsToEncrypt.push({ char: item, number: Number(newNumber), oldNumber: number })
     }
   })
 
@@ -95,13 +105,13 @@ const encryptMessage = (messageToEncryptInChar) => {
   return [str, numbersValidsToEncrypt]
 }
 
-const decryptMessage = (numbersValidsToEncrypt) => {
+const decryptMessage = (messageToEncryptInChar, numberTorDecrypt) => {
   let inverseArray = []
   let str = ''
-  numbersValidsToEncrypt.forEach((item) => {
+
+  numberTorDecrypt.forEach((item) => {
     inverseArray.push(inverseFunction(inputAHTML.value, inputBHTML.value, item.oldNumber))     
   })
-
 
   inverseArray.forEach((item) => {
     if (Number(item) > 0) {
@@ -125,13 +135,14 @@ const decryptMessage = (numbersValidsToEncrypt) => {
 // até achar um número enre -28 e 29
 const findK = (number) => {
   let result
+
   do {
     // sorteia um número aleatório enrre -28 e 29
     const k = Math.floor(Math.random() * 29) - 28
     // cálculo da conguência
     result = Number(number) + Number(k * 29)
   } while (result < -28 || result > 29) 
-
+  
   return Number(result)
 }
 
